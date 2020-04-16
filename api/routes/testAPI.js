@@ -17,5 +17,11 @@ router.get('/', function(req, res, next) {
   }).pipe(res);
 });
 
+router.get('/states/daily', function(req, res, next) {
+  request({
+    uri: 'https://covidtracking.com/api/v1/states/daily.json'
+  }).pipe(res);
+});
+
 module.exports = router;
 
