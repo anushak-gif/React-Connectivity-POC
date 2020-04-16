@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
-import LineGraph from "./components/LineGraph";
+import LineGraph from "./components/Linegraph";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 class App extends Component {
