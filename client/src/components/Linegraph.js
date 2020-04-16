@@ -71,6 +71,8 @@ const states = [
   "WY",
 ];
 
+let state = "GA";
+
 export default class LineGraph extends React.Component {
   constructor(props) {
     super(props);
@@ -146,6 +148,10 @@ export default class LineGraph extends React.Component {
   }
 
   async componentDidMount() {
+   this.fetchData();
+  }
+
+  async fetchData() {
     const currentState = Object.assign(this.state);
     const response = await fetch("http://localhost:9000/testAPI/states/daily")
       .then(function (res) {
@@ -153,7 +159,7 @@ export default class LineGraph extends React.Component {
       })
       .then(function (data) {
         return data
-          .filter((obj) => obj.state === "GA")
+          .filter((obj) => obj.state === state)
           .reduce(
             (curr, next) => {
               curr[0].push(next.totalTestResults);
@@ -187,16 +193,21 @@ export default class LineGraph extends React.Component {
     this.setState({ currentState });
   }
 
+  chooseState = e => {
+    state = e.target.innerHTML;
+    this.fetchData();
+  }
+
   render() {
     return (
       <Container fluid>
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic">
-            STATE
+            {state}
           </Dropdown.Toggle>
           <Dropdown.Menu>
-            {states.map((state) => (
-              <Dropdown.Item>{state}</Dropdown.Item>
+            {states.map((state, i) => (
+              <Dropdown.Item onClick={this.chooseState} key={i}>{state}</Dropdown.Item>
             ))}
           </Dropdown.Menu>
         </Dropdown>

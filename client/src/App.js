@@ -7,7 +7,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-          <h1>Georgia Coronavirus Testing Statistics</h1>
+          <h1>Coronavirus Testing Statistics</h1>
           <LineGraph />
       </div>
     );
