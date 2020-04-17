@@ -4,6 +4,9 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Dropdown from "react-bootstrap/Dropdown";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from 'moment';
 
 let totalTests = 0,
   positiveCases = 0,
@@ -143,6 +146,8 @@ export default class LineGraph extends React.Component {
           data: [],
         },
       ],
+      startDate: new Date('2020-01-20T00:00:00-0500'),
+      endDate: new Date()
     };
     this.chartReference = React.createRef();
   }
@@ -153,6 +158,8 @@ export default class LineGraph extends React.Component {
 
   async fetchData() {
     const currentState = Object.assign(this.state);
+    const currentStart = moment(this.state.startDate).format('YYYYMMDD');
+    const currentEnd = moment(this.state.endDate).format('YYYYMMDD');
     const response = await fetch("http://localhost:9000/testAPI/states/daily")
       .then(function (res) {
         return res.json();
@@ -160,6 +167,7 @@ export default class LineGraph extends React.Component {
       .then(function (data) {
         return data
           .filter((obj) => obj.state === state)
+          .filter((obj) => (obj.date >= currentStart) && (obj.date <= currentEnd))
           .reduce(
             (curr, next) => {
               curr[0].push(next.totalTestResults);
@@ -198,19 +206,46 @@ export default class LineGraph extends React.Component {
     this.fetchData();
   }
 
+  //currently chart doesn't reload until enter also hit, should reload when these functions are called onSelect
+  selectStartDate = selectedDate => {
+    this.setState({
+      startDate: selectedDate
+    });
+    this.fetchData();
+  };
+
+  selectEndDate = selectedDate => {
+    this.setState({
+      endDate: selectedDate
+    });
+    this.fetchData();
+  };
+
+
+
   render() {
     return (
       <Container fluid>
-        <Dropdown>
-          <Dropdown.Toggle variant="success" id="dropdown-basic">
-            {state}
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            {states.map((state, i) => (
-              <Dropdown.Item onClick={this.chooseState} key={i}>{state}</Dropdown.Item>
-            ))}
-          </Dropdown.Menu>
-        </Dropdown>
+        <Row>
+          <Dropdown>
+            <Dropdown.Toggle variant="success" id="dropdown-basic">
+              {state}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              {states.map((state, i) => (
+                <Dropdown.Item onClick={this.chooseState} key={i}>{state}</Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown>
+          <Col>
+            <p>Start Date:</p>
+            <DatePicker selected={this.state.startDate} onSelect={this.selectStartDate} />
+          </Col>
+          <Col>
+            <p>End Date:</p>
+            <DatePicker selected={this.state.endDate} onSelect={this.selectEndDate} />
+          </Col>
+        </Row>
         <Row>
           <Col>
             <Line
@@ -218,7 +253,7 @@ export default class LineGraph extends React.Component {
               data={this.state}
               width={50}
               height={25}
-              options={{ maintainAspectRatio: true }}
+              options={{ responsive: true, maintainAspectRatio: true }}
             />
           </Col>
           <Col>
