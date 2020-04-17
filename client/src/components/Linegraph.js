@@ -6,7 +6,7 @@ import Col from "react-bootstrap/Col";
 import Dropdown from "react-bootstrap/Dropdown";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import moment from 'moment';
+import moment from "moment";
 
 let totalTests = 0,
   positiveCases = 0,
@@ -75,6 +75,10 @@ const states = [
 ];
 
 let state = "GA";
+
+const json = fetch("http://localhost:9000/testAPI/states/daily").then((res) => {
+  return res.json();
+});
 
 export default class LineGraph extends React.Component {
   constructor(props) {
@@ -146,28 +150,25 @@ export default class LineGraph extends React.Component {
           data: [],
         },
       ],
-      startDate: new Date('2020-01-20T00:00:00-0500'),
-      endDate: new Date()
+      startDate: new Date("2020-03-04T00:00:00-0500"),
+      endDate: new Date(),
     };
     this.chartReference = React.createRef();
   }
 
-  async componentDidMount() {
-   this.fetchData();
+  componentDidMount() {
+    this.fetchData();
   }
 
   async fetchData() {
     const currentState = Object.assign(this.state);
-    const currentStart = moment(this.state.startDate).format('YYYYMMDD');
-    const currentEnd = moment(this.state.endDate).format('YYYYMMDD');
-    const response = await fetch("http://localhost:9000/testAPI/states/daily")
-      .then(function (res) {
-        return res.json();
-      })
-      .then(function (data) {
+    const currentStart = moment(this.state.startDate).format("YYYYMMDD");
+    const currentEnd = moment(this.state.endDate).format("YYYYMMDD");
+    const response = await json
+      .then((data) => {
         return data
           .filter((obj) => obj.state === state)
-          .filter((obj) => (obj.date >= currentStart) && (obj.date <= currentEnd))
+          .filter((obj) => obj.date >= currentStart && obj.date <= currentEnd)
           .reduce(
             (curr, next) => {
               curr[0].push(next.totalTestResults);
@@ -183,7 +184,7 @@ export default class LineGraph extends React.Component {
             [[], [], [], []]
           );
       })
-      .catch(function (err) {
+      .catch((err) => {
         console.log(err);
         return null;
       });
@@ -201,27 +202,25 @@ export default class LineGraph extends React.Component {
     this.setState({ currentState });
   }
 
-  chooseState = e => {
+  chooseState = (e) => {
     state = e.target.innerHTML;
     this.fetchData();
-  }
+  };
 
   //currently chart doesn't reload until enter also hit, should reload when these functions are called onSelect
-  selectStartDate = selectedDate => {
+  selectStartDate = (selectedDate) => {
     this.setState({
-      startDate: selectedDate
+      startDate: selectedDate,
     });
     this.fetchData();
   };
 
-  selectEndDate = selectedDate => {
+  selectEndDate = (selectedDate) => {
     this.setState({
-      endDate: selectedDate
+      endDate: selectedDate,
     });
     this.fetchData();
   };
-
-
 
   render() {
     return (
@@ -234,7 +233,9 @@ export default class LineGraph extends React.Component {
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 {states.map((state, i) => (
-                  <Dropdown.Item onClick={this.chooseState} key={i}>{state}</Dropdown.Item>
+                  <Dropdown.Item onClick={this.chooseState} key={i}>
+                    {state}
+                  </Dropdown.Item>
                 ))}
               </Dropdown.Menu>
             </Dropdown>
@@ -243,11 +244,17 @@ export default class LineGraph extends React.Component {
             <Row className="justify-content-start">
               <Col className="col-3">
                 <p className="no-emphasis">Start Date:</p>
-                <DatePicker selected={this.state.startDate} onSelect={this.selectStartDate}/>
+                <DatePicker
+                  selected={this.state.startDate}
+                  onSelect={this.selectStartDate}
+                />
               </Col>
               <Col className="col-3">
                 <p className="no-emphasis">End Date:</p>
-                <DatePicker selected={this.state.endDate} onSelect={this.selectEndDate} />
+                <DatePicker
+                  selected={this.state.endDate}
+                  onSelect={this.selectEndDate}
+                />
               </Col>
             </Row>
           </Col>
@@ -264,13 +271,25 @@ export default class LineGraph extends React.Component {
           </Col>
           <Col className="col-3">
             <Row className="justify-content-center">Positive Cases</Row>
-            <Row><p className="statementText covidPositive justify-content-center">{positiveCases}</p></Row>
+            <Row>
+              <p className="statementText covidPositive justify-content-center">
+                {positiveCases}
+              </p>
+            </Row>
             <br />
             <Row className="justify-content-center">Negative Cases</Row>
-            <Row><p className="statementText covidNegative justify-content-center">{negativeCases}</p></Row>
+            <Row>
+              <p className="statementText covidNegative justify-content-center">
+                {negativeCases}
+              </p>
+            </Row>
             <br />
             <Row className="justify-content-center">Total Tests</Row>
-            <Row><p className="statementText covidNeutral justify-content-center">{totalTests}</p></Row>
+            <Row>
+              <p className="statementText covidNeutral justify-content-center">
+                {totalTests}
+              </p>
+            </Row>
           </Col>
         </Row>
       </Container>
