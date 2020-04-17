@@ -1,0 +1,60 @@
+p, h1, h2, h3{
+    color: #354049;
+}
+
+h1{
+    padding: 40px 10px;
+    margin-left: 10%;
+}
+
+#state-selector-btn{
+    background-color: #135499;
+    border-color: #135499;
+}
+
+#state-selector-btn:hover{
+    background-color: #114883;
+    border-color: #114883;
+}
+
+p.statementText{
+    width: 100%;
+    font-size: 3em;
+    font-weight: bold;
+    text-align: center;
+}
+
+.covidPositive{
+    color: #d89479;
+}
+
+.covidNegative{
+    color: #9cbf9a;
+}
+
+.covidNeutral{
+    color: #4574ad;
+}
+
+.no-emphasis{
+    color: #616161;
+    font-size: 12px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.bottom-padded{
+    padding-bottom: 40px;
+}
+
+#chatbot{
+    margin-left: 10%;
+}
+
+#chat-head{
+    background-color: #114883;
+}
+
+.light-text{
+    color: #f2f2f2;
+}
