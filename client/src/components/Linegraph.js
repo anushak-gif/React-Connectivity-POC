@@ -4,6 +4,9 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Dropdown from "react-bootstrap/Dropdown";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from 'moment';
 
 let totalTests = 0,
   positiveCases = 0,
@@ -83,17 +86,17 @@ export default class LineGraph extends React.Component {
           label: "Total",
           fill: false,
           lineTension: 0.1,
-          backgroundColor: "rgba(75,192,192,0.4)",
-          borderColor: "rgba(75,192,192,1)",
+          backgroundColor: "#4574ad",
+          borderColor: "#4574ad",
           borderCapStyle: "butt",
           borderDash: [],
           borderDashOffset: 0.0,
           borderJoinStyle: "miter",
-          pointBorderColor: "rgba(75,192,192,1)",
-          pointBackgroundColor: "#fff",
+          pointBorderColor: "#4574ad",
+          pointBackgroundColor: "#4574ad",
           pointBorderWidth: 1,
           pointHoverRadius: 5,
-          pointHoverBackgroundColor: "rgba(75,192,192,1)",
+          pointHoverBackgroundColor: "#4574ad",
           pointHoverBorderColor: "rgba(220,220,220,1)",
           pointHoverBorderWidth: 2,
           pointRadius: 1,
@@ -104,17 +107,17 @@ export default class LineGraph extends React.Component {
           label: "Positive",
           fill: false,
           lineTension: 0.1,
-          backgroundColor: "green",
-          borderColor: "green",
+          backgroundColor: "#d89479",
+          borderColor: "#d89479",
           borderCapStyle: "butt",
           borderDash: [],
           borderDashOffset: 0.0,
           borderJoinStyle: "miter",
-          pointBorderColor: "green",
-          pointBackgroundColor: "green",
+          pointBorderColor: "#d89479",
+          pointBackgroundColor: "#d89479",
           pointBorderWidth: 1,
           pointHoverRadius: 5,
-          pointHoverBackgroundColor: "green",
+          pointHoverBackgroundColor: "#d89479",
           pointHoverBorderColor: "rgba(220,220,220,1)",
           pointHoverBorderWidth: 2,
           pointRadius: 1,
@@ -125,17 +128,17 @@ export default class LineGraph extends React.Component {
           label: "Negative",
           fill: false,
           lineTension: 0.1,
-          backgroundColor: "red",
-          borderColor: "red",
+          backgroundColor: "#9cbf9a",
+          borderColor: "#9cbf9a",
           borderCapStyle: "butt",
           borderDash: [],
           borderDashOffset: 0.0,
           borderJoinStyle: "miter",
-          pointBorderColor: "red",
-          pointBackgroundColor: "red",
+          pointBorderColor: "#9cbf9a",
+          pointBackgroundColor: "#9cbf9a",
           pointBorderWidth: 1,
           pointHoverRadius: 5,
-          pointHoverBackgroundColor: "red",
+          pointHoverBackgroundColor: "#9cbf9a",
           pointHoverBorderColor: "rgba(220,220,220,1)",
           pointHoverBorderWidth: 2,
           pointRadius: 1,
@@ -143,6 +146,8 @@ export default class LineGraph extends React.Component {
           data: [],
         },
       ],
+      startDate: new Date('2020-01-20T00:00:00-0500'),
+      endDate: new Date()
     };
     this.chartReference = React.createRef();
   }
@@ -153,6 +158,8 @@ export default class LineGraph extends React.Component {
 
   async fetchData() {
     const currentState = Object.assign(this.state);
+    const currentStart = moment(this.state.startDate).format('YYYYMMDD');
+    const currentEnd = moment(this.state.endDate).format('YYYYMMDD');
     const response = await fetch("http://localhost:9000/testAPI/states/daily")
       .then(function (res) {
         return res.json();
@@ -160,6 +167,7 @@ export default class LineGraph extends React.Component {
       .then(function (data) {
         return data
           .filter((obj) => obj.state === state)
+          .filter((obj) => (obj.date >= currentStart) && (obj.date <= currentEnd))
           .reduce(
             (curr, next) => {
               curr[0].push(next.totalTestResults);
@@ -198,38 +206,71 @@ export default class LineGraph extends React.Component {
     this.fetchData();
   }
 
+  //currently chart doesn't reload until enter also hit, should reload when these functions are called onSelect
+  selectStartDate = selectedDate => {
+    this.setState({
+      startDate: selectedDate
+    });
+    this.fetchData();
+  };
+
+  selectEndDate = selectedDate => {
+    this.setState({
+      endDate: selectedDate
+    });
+    this.fetchData();
+  };
+
+
+
   render() {
     return (
-      <Container fluid>
-        <Dropdown>
-          <Dropdown.Toggle variant="success" id="dropdown-basic">
-            {state}
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            {states.map((state, i) => (
-              <Dropdown.Item onClick={this.chooseState} key={i}>{state}</Dropdown.Item>
-            ))}
-          </Dropdown.Menu>
-        </Dropdown>
-        <Row>
-          <Col>
+      <Container fluid className="bottom-padded">
+        <Row className="justify-content-end">
+          <Col className="col-3">
+            <Dropdown>
+              <Dropdown.Toggle variant="success" id="state-selector-btn">
+                {state}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {states.map((state, i) => (
+                  <Dropdown.Item onClick={this.chooseState} key={i}>{state}</Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </Col>
+          <Col className="col-8">
+            <Row className="justify-content-start">
+              <Col className="col-3">
+                <p className="no-emphasis">Start Date:</p>
+                <DatePicker selected={this.state.startDate} onSelect={this.selectStartDate}/>
+              </Col>
+              <Col className="col-3">
+                <p className="no-emphasis">End Date:</p>
+                <DatePicker selected={this.state.endDate} onSelect={this.selectEndDate} />
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+        <Row className="justify-content-center">
+          <Col className="col-7">
             <Line
               ref={this.chartReference}
               data={this.state}
               width={50}
               height={25}
-              options={{ maintainAspectRatio: true }}
+              options={{ responsive: true, maintainAspectRatio: true }}
             />
           </Col>
-          <Col>
-            <Row>Positive Cases</Row>
-            <Row>{positiveCases}</Row>
+          <Col className="col-3">
+            <Row className="justify-content-center">Positive Cases</Row>
+            <Row><p className="statementText covidPositive justify-content-center">{positiveCases}</p></Row>
             <br />
-            <Row>Negative Cases</Row>
-            <Row>{negativeCases}</Row>
+            <Row className="justify-content-center">Negative Cases</Row>
+            <Row><p className="statementText covidNegative justify-content-center">{negativeCases}</p></Row>
             <br />
-            <Row>Total Tests</Row>
-            <Row>{totalTests}</Row>
+            <Row className="justify-content-center">Total Tests</Row>
+            <Row><p className="statementText covidNeutral justify-content-center">{totalTests}</p></Row>
           </Col>
         </Row>
       </Container>
