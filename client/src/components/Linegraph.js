@@ -163,8 +163,8 @@ export default class LineGraph extends React.Component {
 
   async fetchData() {
     const currentState = Object.assign(this.state);
-    let currentStart = moment(this.state.startDate).format("YYYYMMDD");
-    let currentEnd = moment(this.state.endDate).format("YYYYMMDD");
+    const currentStart = moment(this.state.startDate).format("YYYYMMDD");
+    const currentEnd = moment(this.state.endDate).format("YYYYMMDD");
     const response = await json
       .then((data) => {
         return data
