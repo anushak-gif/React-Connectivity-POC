@@ -158,10 +158,10 @@ export default class LineGraph extends React.Component {
   };
 
   componentDidMount() {
-    this.fetchData();
+    this.filterData();
   }
 
-  async fetchData() {
+  async filterData() {
     const currentState = Object.assign(this.state);
     const currentStart = moment(this.state.startDate).format("YYYYMMDD");
     const currentEnd = moment(this.state.endDate).format("YYYYMMDD");
@@ -171,16 +171,16 @@ export default class LineGraph extends React.Component {
           .filter((obj) => obj.state === state)
           .filter((obj) => obj.date >= currentStart && obj.date <= currentEnd)
           .reduce(
-            (curr, next) => {
-              curr[0].push(next.totalTestResults);
-              curr[1].push(next.positive);
-              curr[2].push(next.negative);
-              curr[3].push(
+            (arr, next) => {
+              arr[0].push(next.totalTestResults);
+              arr[1].push(next.positive);
+              arr[2].push(next.negative);
+              arr[3].push(
                 next.date
                   .toString()
                   .replace(/(\d{4})(\d{2})(\d{2})/g, "$2-$3-$1")
               );
-              return curr;
+              return arr;
             },
             [[], [], [], []]
           );
@@ -205,19 +205,25 @@ export default class LineGraph extends React.Component {
 
   chooseState = (e) => {
     state = e.target.innerHTML;
-    this.fetchData();
+    this.filterData();
   };
 
   selectStartDate = (selectedDate) => {
-    this.setState({
-      startDate: selectedDate
-    }, () => this.fetchData());
+    this.setState(
+      {
+        startDate: selectedDate,
+      },
+      () => this.filterData()
+    );
   };
 
   selectEndDate = (selectedDate) => {
-    this.setState({
-      endDate: selectedDate
-    }, () => this.fetchData());
+    this.setState(
+      {
+        endDate: selectedDate,
+      },
+      () => this.filterData()
+    );
   };
 
   render() {
