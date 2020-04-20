@@ -6,7 +6,7 @@ import Col from "react-bootstrap/Col";
 import Dropdown from "react-bootstrap/Dropdown";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import moment from 'moment';
+import moment from "moment";
 
 let totalTests = 0,
   positiveCases = 0,
@@ -76,114 +76,116 @@ const states = [
 
 let state = "GA";
 
+const json = fetch("http://localhost:9000/testAPI/states/daily").then((res) => {
+  return res.json();
+});
+
 export default class LineGraph extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      labels: [],
-      datasets: [
-        {
-          label: "Total",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "#4574ad",
-          borderColor: "#4574ad",
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: "#4574ad",
-          pointBackgroundColor: "#4574ad",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: "#4574ad",
-          pointHoverBorderColor: "rgba(220,220,220,1)",
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: [],
-        },
-        {
-          label: "Positive",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "#d89479",
-          borderColor: "#d89479",
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: "#d89479",
-          pointBackgroundColor: "#d89479",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: "#d89479",
-          pointHoverBorderColor: "rgba(220,220,220,1)",
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: [],
-        },
-        {
-          label: "Negative",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "#9cbf9a",
-          borderColor: "#9cbf9a",
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: "#9cbf9a",
-          pointBackgroundColor: "#9cbf9a",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: "#9cbf9a",
-          pointHoverBorderColor: "rgba(220,220,220,1)",
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: [],
-        },
-      ],
-      startDate: new Date('2020-01-20T00:00:00-0500'),
-      endDate: new Date()
-    };
     this.chartReference = React.createRef();
   }
 
-  async componentDidMount() {
-   this.fetchData();
+  state = {
+    labels: [],
+    datasets: [
+      {
+        label: "Total",
+        fill: false,
+        lineTension: 0.1,
+        backgroundColor: "#4574ad",
+        borderColor: "#4574ad",
+        borderCapStyle: "butt",
+        borderDash: [],
+        borderDashOffset: 0.0,
+        borderJoinStyle: "miter",
+        pointBorderColor: "#4574ad",
+        pointBackgroundColor: "#4574ad",
+        pointBorderWidth: 1,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: "#4574ad",
+        pointHoverBorderColor: "rgba(220,220,220,1)",
+        pointHoverBorderWidth: 2,
+        pointRadius: 1,
+        pointHitRadius: 10,
+        data: [],
+      },
+      {
+        label: "Positive",
+        fill: false,
+        lineTension: 0.1,
+        backgroundColor: "#d89479",
+        borderColor: "#d89479",
+        borderCapStyle: "butt",
+        borderDash: [],
+        borderDashOffset: 0.0,
+        borderJoinStyle: "miter",
+        pointBorderColor: "#d89479",
+        pointBackgroundColor: "#d89479",
+        pointBorderWidth: 1,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: "#d89479",
+        pointHoverBorderColor: "rgba(220,220,220,1)",
+        pointHoverBorderWidth: 2,
+        pointRadius: 1,
+        pointHitRadius: 10,
+        data: [],
+      },
+      {
+        label: "Negative",
+        fill: false,
+        lineTension: 0.1,
+        backgroundColor: "#9cbf9a",
+        borderColor: "#9cbf9a",
+        borderCapStyle: "butt",
+        borderDash: [],
+        borderDashOffset: 0.0,
+        borderJoinStyle: "miter",
+        pointBorderColor: "#9cbf9a",
+        pointBackgroundColor: "#9cbf9a",
+        pointBorderWidth: 1,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: "#9cbf9a",
+        pointHoverBorderColor: "rgba(220,220,220,1)",
+        pointHoverBorderWidth: 2,
+        pointRadius: 1,
+        pointHitRadius: 10,
+        data: [],
+      },
+    ],
+    startDate: new Date("2020-03-04T00:00:00-0500"),
+    endDate: new Date(),
+  };
+
+  componentDidMount() {
+    this.filterData();
   }
 
-  async fetchData() {
+  async filterData() {
     const currentState = Object.assign(this.state);
-    const currentStart = moment(this.state.startDate).format('YYYYMMDD');
-    const currentEnd = moment(this.state.endDate).format('YYYYMMDD');
-    const response = await fetch("http://localhost:9000/testAPI/states/daily")
-      .then(function (res) {
-        return res.json();
-      })
-      .then(function (data) {
+    const currentStart = moment(this.state.startDate).format("YYYYMMDD");
+    const currentEnd = moment(this.state.endDate).format("YYYYMMDD");
+    const response = await json
+      .then((data) => {
         return data
           .filter((obj) => obj.state === state)
-          .filter((obj) => (obj.date >= currentStart) && (obj.date <= currentEnd))
+          .filter((obj) => obj.date >= currentStart && obj.date <= currentEnd)
           .reduce(
-            (curr, next) => {
-              curr[0].push(next.totalTestResults);
-              curr[1].push(next.positive);
-              curr[2].push(next.negative);
-              curr[3].push(
+            (arr, next) => {
+              arr[0].push(next.totalTestResults);
+              arr[1].push(next.positive);
+              arr[2].push(next.negative);
+              arr[3].push(
                 next.date
                   .toString()
                   .replace(/(\d{4})(\d{2})(\d{2})/g, "$2-$3-$1")
               );
-              return curr;
+              return arr;
             },
             [[], [], [], []]
           );
       })
-      .catch(function (err) {
+      .catch((err) => {
         console.log(err);
         return null;
       });
@@ -201,27 +203,28 @@ export default class LineGraph extends React.Component {
     this.setState({ currentState });
   }
 
-  chooseState = e => {
+  chooseState = (e) => {
     state = e.target.innerHTML;
-    this.fetchData();
-  }
-
-  //currently chart doesn't reload until enter also hit, should reload when these functions are called onSelect
-  selectStartDate = selectedDate => {
-    this.setState({
-      startDate: selectedDate
-    });
-    this.fetchData();
+    this.filterData();
   };
 
-  selectEndDate = selectedDate => {
-    this.setState({
-      endDate: selectedDate
-    });
-    this.fetchData();
+  selectStartDate = (selectedDate) => {
+    this.setState(
+      {
+        startDate: selectedDate,
+      },
+      () => this.filterData()
+    );
   };
 
-
+  selectEndDate = (selectedDate) => {
+    this.setState(
+      {
+        endDate: selectedDate,
+      },
+      () => this.filterData()
+    );
+  };
 
   render() {
     return (
@@ -234,7 +237,9 @@ export default class LineGraph extends React.Component {
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 {states.map((state, i) => (
-                  <Dropdown.Item onClick={this.chooseState} key={i}>{state}</Dropdown.Item>
+                  <Dropdown.Item onClick={this.chooseState} key={i}>
+                    {state}
+                  </Dropdown.Item>
                 ))}
               </Dropdown.Menu>
             </Dropdown>
@@ -243,11 +248,17 @@ export default class LineGraph extends React.Component {
             <Row className="justify-content-start">
               <Col className="col-3">
                 <p className="no-emphasis">Start Date:</p>
-                <DatePicker selected={this.state.startDate} onSelect={this.selectStartDate}/>
+                <DatePicker
+                  selected={this.state.startDate}
+                  onChange={this.selectStartDate}
+                />
               </Col>
               <Col className="col-3">
                 <p className="no-emphasis">End Date:</p>
-                <DatePicker selected={this.state.endDate} onSelect={this.selectEndDate} />
+                <DatePicker
+                  selected={this.state.endDate}
+                  onChange={this.selectEndDate}
+                />
               </Col>
             </Row>
           </Col>
@@ -259,18 +270,30 @@ export default class LineGraph extends React.Component {
               data={this.state}
               width={50}
               height={25}
-              options={{ responsive: true, maintainAspectRatio: true }}
+              options={{ responsive: true, maintainAspectRatio: false }}
             />
           </Col>
           <Col className="col-3">
             <Row className="justify-content-center">Positive Cases</Row>
-            <Row><p className="statementText covidPositive justify-content-center">{positiveCases}</p></Row>
+            <Row>
+              <p className="statementText covidPositive justify-content-center">
+                {positiveCases}
+              </p>
+            </Row>
             <br />
             <Row className="justify-content-center">Negative Cases</Row>
-            <Row><p className="statementText covidNegative justify-content-center">{negativeCases}</p></Row>
+            <Row>
+              <p className="statementText covidNegative justify-content-center">
+                {negativeCases}
+              </p>
+            </Row>
             <br />
             <Row className="justify-content-center">Total Tests</Row>
-            <Row><p className="statementText covidNeutral justify-content-center">{totalTests}</p></Row>
+            <Row>
+              <p className="statementText covidNeutral justify-content-center">
+                {totalTests}
+              </p>
+            </Row>
           </Col>
         </Row>
       </Container>
