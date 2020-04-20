@@ -208,25 +208,16 @@ export default class LineGraph extends React.Component {
     this.fetchData();
   };
 
-  //currently chart doesn't reload until enter also hit, should reload when these functions are called onSelect
   selectStartDate = (selectedDate) => {
     this.setState({
-      startDate: selectedDate,
-    });
-    const self = this;
-    setTimeout(function() {
-      self.fetchData();
-    }, 100);
+      startDate: selectedDate
+    }, () => this.fetchData());
   };
 
   selectEndDate = (selectedDate) => {
     this.setState({
       endDate: selectedDate
-    });
-    const self = this;
-    setTimeout(function() {
-      self.fetchData();
-    }, 100)
+    }, () => this.fetchData());
   };
 
   render() {
@@ -273,7 +264,7 @@ export default class LineGraph extends React.Component {
               data={this.state}
               width={50}
               height={25}
-              options={{ responsive: true, maintainAspectRatio: true }}
+              options={{ responsive: true, maintainAspectRatio: false }}
             />
           </Col>
           <Col className="col-3">
