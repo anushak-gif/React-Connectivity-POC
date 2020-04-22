@@ -7,21 +7,20 @@ router.get("/", function(req, res, next) {
 
 module.exports = router; */
 
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var request = require('request');
+var request = require("request");
 
-router.get('/', function(req, res, next) {
+router.get("/", function (req, res, next) {
   request({
-    uri: 'https://covidtracking.com/api/states',
+    uri: "https://covidtracking.com/api/states",
   }).pipe(res);
 });
 
-router.get('/states/daily', function(req, res, next) {
+router.get("/states/daily", function (req, res, next) {
   request({
-    uri: 'https://covidtracking.com/api/v1/states/daily.json'
+    uri: "https://covidtracking.com/api/v1/states/daily.json",
   }).pipe(res);
 });
 
 module.exports = router;
-
