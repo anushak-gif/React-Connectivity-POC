@@ -1,5 +1,6 @@
 import React from "react";
 import xml from "xml-js";
+import { ListGroup } from "react-bootstrap";
 
 const request = fetch(
   "https://tools.cdc.gov/api/v2/resources/media/404952.rss"
@@ -22,17 +23,15 @@ export default class News extends React.Component {
 
   render() {
     return (
-      <div>
+      <ListGroup>
         <h1>CDC News Articles</h1>
         {this.state.items.map((item) => (
-          <div>
-            <a href={item[2].elements[0].text} target="new">
-              <h3>{item[0].elements[0].text}</h3>
-            </a>
+          <ListGroup.Item as="a" href={item[2].elements[0].text} target="new">
+            <h3>{item[0].elements[0].text}</h3>
             <p>{item[1].elements[0].text}</p>
-          </div>
+          </ListGroup.Item>
         ))}
-      </div>
+      </ListGroup>
     );
   }
 }
