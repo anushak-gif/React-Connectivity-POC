@@ -25,8 +25,8 @@ export default class News extends React.Component {
     return (
       <ListGroup>
         <h1>CDC News Articles</h1>
-        {this.state.items.map((item) => (
-          <ListGroup.Item as="a" href={item[2].elements[0].text} target="new">
+        {this.state.items.map((item, key) => (
+          <ListGroup.Item as="a" href={item[2].elements[0].text} target="new" key={key}>
             <h3>{item[0].elements[0].text}</h3>
             <p>{item[1].elements[0].text}</p>
           </ListGroup.Item>

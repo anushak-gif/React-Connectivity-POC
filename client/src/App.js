@@ -9,7 +9,7 @@ class App extends Component {
   render() {
     return (
       <div className="App container-fluid">
-        <h1>My Covid-19 Dashboard</h1>
+        <h1>My COVID-19 Dashboard</h1>
         <LineGraph />
         <Chatbot />
         <News />
