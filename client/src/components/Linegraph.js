@@ -217,11 +217,10 @@ export default class LineGraph extends React.Component {
     this.setState({ currentState });
   }
 
-  calculateTotals(arr1, arr2, arr3) {
-    console.log(arr3);
-    totalTests = this.reduceHelper(arr1);
-    positiveCases = this.reduceHelper(arr2);
-    negativeCases = this.reduceHelper(arr3);
+  calculateTotals(...arr) {
+    totalTests = this.reduceHelper(arr[0]);
+    positiveCases = this.reduceHelper(arr[1]);
+    negativeCases = this.reduceHelper(arr[2]);
   }
 
   reduceHelper(arr) {
