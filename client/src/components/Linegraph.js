@@ -204,21 +204,26 @@ export default class LineGraph extends React.Component {
         return null;
       });
 
-    totalTests = response[0][0];
-    positiveCases = response[1][0];
-    negativeCases = response[2][0];
+    totalTests = this.calculateTotals(response[0]);
+    positiveCases = this.calculateTotals(response[1]);
+    negativeCases = this.calculateTotals(response[2]);
 
     response[0].reverse(); // total
     response[1].reverse(); // positive
     response[2].reverse(); // negative
     response[3].reverse(); // dates
 
-
     currentState.datasets[0].data = response[0];
     currentState.datasets[1].data = response[1];
     currentState.datasets[2].data = response[2];
     currentState.labels = response[3];
     this.setState({ currentState });
+  }
+
+  calculateTotals(numbers) {
+    return typeof numbers[numbers.length - 1] === "number"
+      ? numbers[0] - numbers[numbers.length - 1]
+      : numbers[0];
   }
 
   chooseState = (e) => {
