@@ -80,6 +80,20 @@ const json = fetch("http://localhost:9000/testAPI/states/daily").then((res) => {
   return res.json();
 });
 
+// eslint-disable-next-line
+Date.prototype.addDays = function (days) {
+  var date = new Date(this.valueOf());
+  date.setDate(date.getDate() + days);
+  return date;
+};
+
+// eslint-disable-next-line
+Date.prototype.subtractDays = function (days) {
+  var date = new Date(this.valueOf());
+  date.setDate(date.getDate() - days);
+  return date;
+};
+
 export default class LineGraph extends React.Component {
   constructor(props) {
     super(props);
@@ -154,7 +168,7 @@ export default class LineGraph extends React.Component {
       },
     ],
     startDate: new Date("2020-03-04T00:00:00-0500"),
-    endDate: new Date(),
+    endDate: new Date().subtractDays(1),
   };
 
   componentDidMount() {
@@ -189,18 +203,33 @@ export default class LineGraph extends React.Component {
         console.log(err);
         return null;
       });
-    totalTests = response[0][0];
-    positiveCases = response[1][0];
-    negativeCases = response[2][0];
     response[0].reverse(); // total
     response[1].reverse(); // positive
     response[2].reverse(); // negative
     response[3].reverse(); // dates
+
+    this.calculateTotals(response[0], response[1], response[2]);
+
     currentState.datasets[0].data = response[0];
     currentState.datasets[1].data = response[1];
     currentState.datasets[2].data = response[2];
     currentState.labels = response[3];
     this.setState({ currentState });
+  }
+
+  calculateTotals(...arr) {
+    totalTests = this.reduceHelper(arr[0]);
+    positiveCases = this.reduceHelper(arr[1]);
+    negativeCases = this.reduceHelper(arr[2]);
+  }
+
+  reduceHelper(arr) {
+    return arr.reduce((agg, next) => {
+      if (!isNaN(next) && next !== undefined && next !== null) {
+        agg += next;
+      }
+      return agg;
+    }, 0);
   }
 
   chooseState = (e) => {
@@ -250,6 +279,8 @@ export default class LineGraph extends React.Component {
                 <p className="no-emphasis">Start Date:</p>
                 <DatePicker
                   selected={this.state.startDate}
+                  minDate={new Date("2020-03-04T00:00:00-0500")}
+                  maxDate={this.state.endDate.subtractDays(1)}
                   onChange={this.selectStartDate}
                 />
               </Col>
@@ -257,6 +288,8 @@ export default class LineGraph extends React.Component {
                 <p className="no-emphasis">End Date:</p>
                 <DatePicker
                   selected={this.state.endDate}
+                  minDate={this.state.startDate.addDays(1)}
+                  maxDate={new Date().subtractDays(1)}
                   onChange={this.selectEndDate}
                 />
               </Col>
@@ -270,7 +303,7 @@ export default class LineGraph extends React.Component {
               data={this.state}
               width={50}
               height={25}
-              options={{ responsive: true, maintainAspectRatio: false }}
+              options={{ responsive: true, maintainAspectRatio: true }}
             />
           </Col>
           <Col className="col-3">
