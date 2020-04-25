@@ -5,7 +5,7 @@ import Col from "react-bootstrap/Col";
 export default class Chatbot extends React.Component {
     render() {
         return (
-            <div id="chatbot" className="container-fluid">
+            <div id="chatbot" className="container-fluid bottom-padded">
                 <Row>
                     <Col className="col-7">
                         <div className="card">

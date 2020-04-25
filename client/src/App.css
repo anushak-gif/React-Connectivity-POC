@@ -55,6 +55,10 @@ p.statementText{
     background-color: #114883;
 }
 
+div.card-header{
+    background-color: #114883;
+}
+
 .light-text{
     color: #f2f2f2;
 }
