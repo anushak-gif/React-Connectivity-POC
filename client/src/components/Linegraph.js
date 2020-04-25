@@ -203,12 +203,15 @@ export default class LineGraph extends React.Component {
         console.log(err);
         return null;
       });
+
+    totalTests = this.calculateTotals(response[0]);
+    positiveCases = this.calculateTotals(response[1]);
+    negativeCases = this.calculateTotals(response[2]);
+
     response[0].reverse(); // total
     response[1].reverse(); // positive
     response[2].reverse(); // negative
     response[3].reverse(); // dates
-
-    this.calculateTotals(response[0], response[1], response[2]);
 
     currentState.datasets[0].data = response[0];
     currentState.datasets[1].data = response[1];
@@ -217,19 +220,10 @@ export default class LineGraph extends React.Component {
     this.setState({ currentState });
   }
 
-  calculateTotals(...arr) {
-    totalTests = this.reduceHelper(arr[0]);
-    positiveCases = this.reduceHelper(arr[1]);
-    negativeCases = this.reduceHelper(arr[2]);
-  }
-
-  reduceHelper(arr) {
-    return arr.reduce((agg, next) => {
-      if (!isNaN(next) && next !== undefined && next !== null) {
-        agg += next;
-      }
-      return agg;
-    }, 0);
+  calculateTotals(numbers) {
+    return typeof numbers[numbers.length - 1] === "number"
+      ? numbers[0] - numbers[numbers.length - 1]
+      : numbers[0];
   }
 
   chooseState = (e) => {
