@@ -4,12 +4,13 @@ import LineGraph from "./components/Linegraph";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Chatbot from "./components/Chatbot";
 import Canvas from "./components/Canvas";
+import image from './images/covid.png';
 
 class App extends Component {
   render() {
     return (
       <div className="App container-fluid">
-        <h1>My COVID-19 Dashboard</h1>
+        <img src={image} id="title" alt="covid"/>
         <LineGraph />
         <Chatbot />
         <Canvas />
