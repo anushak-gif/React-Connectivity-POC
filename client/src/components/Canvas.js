@@ -1,5 +1,5 @@
 import React from "react";
-import Widget from "./Widget";
+// import Widget from "./Widget";
 import { CardColumns } from "react-bootstrap";
 import QuickLinks from "./QuickLinks";
 import Instagram from "./Instagram";
