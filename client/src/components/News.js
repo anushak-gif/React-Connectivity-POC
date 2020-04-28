@@ -25,12 +25,11 @@ export default class News extends React.Component {
   render() {
     return (
       <div>
-        <Widget widgetTitle="News">
+        <Widget widgetTitle="Articles">
           <ListGroup>
             {this.state.items.map((item, key) => (
               <ListGroup.Item as="a" href={item[2].elements[0].text} target="new" key={key}>
                 <h5>{item[0].elements[0].text}</h5>
-                <p>{item[1].elements[0].text}</p>
               </ListGroup.Item>
             ))}
           </ListGroup>
